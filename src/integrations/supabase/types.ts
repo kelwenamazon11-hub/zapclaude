@@ -14,7 +14,200 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      campanhas: {
+        Row: {
+          created_at: string
+          delay_max: number
+          delay_min: number
+          enviados: number
+          falhas: number
+          id: string
+          instancia_id: string | null
+          mensagens: Json
+          nome: string
+          status: string
+          total_contatos: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          delay_max?: number
+          delay_min?: number
+          enviados?: number
+          falhas?: number
+          id?: string
+          instancia_id?: string | null
+          mensagens?: Json
+          nome: string
+          status?: string
+          total_contatos?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          delay_max?: number
+          delay_min?: number
+          enviados?: number
+          falhas?: number
+          id?: string
+          instancia_id?: string | null
+          mensagens?: Json
+          nome?: string
+          status?: string
+          total_contatos?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campanhas_instancia_id_fkey"
+            columns: ["instancia_id"]
+            isOneToOne: false
+            referencedRelation: "instancias"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      configuracoes: {
+        Row: {
+          chave: string
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+          valor: string | null
+        }
+        Insert: {
+          chave: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+          valor?: string | null
+        }
+        Update: {
+          chave?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+          valor?: string | null
+        }
+        Relationships: []
+      }
+      contatos: {
+        Row: {
+          created_at: string
+          id: string
+          nome: string | null
+          numero: string
+          status: string
+          tag: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          nome?: string | null
+          numero: string
+          status?: string
+          tag?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          nome?: string | null
+          numero?: string
+          status?: string
+          tag?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      instancias: {
+        Row: {
+          created_at: string
+          id: string
+          nome: string
+          numero: string | null
+          qr_code: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          nome: string
+          numero?: string | null
+          qr_code?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          nome?: string
+          numero?: string | null
+          qr_code?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      mensagens_enviadas: {
+        Row: {
+          campanha_id: string
+          contato_id: string
+          created_at: string
+          id: string
+          mensagem: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          campanha_id: string
+          contato_id: string
+          created_at?: string
+          id?: string
+          mensagem: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          campanha_id?: string
+          contato_id?: string
+          created_at?: string
+          id?: string
+          mensagem?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mensagens_enviadas_campanha_id_fkey"
+            columns: ["campanha_id"]
+            isOneToOne: false
+            referencedRelation: "campanhas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mensagens_enviadas_contato_id_fkey"
+            columns: ["contato_id"]
+            isOneToOne: false
+            referencedRelation: "contatos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
