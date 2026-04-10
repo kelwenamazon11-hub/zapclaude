@@ -12,6 +12,10 @@ import Disparos from "./pages/admin/Disparos";
 import ImportarContatos from "./pages/admin/ImportarContatos";
 import Contatos from "./pages/admin/Contatos";
 import Campanhas from "./pages/admin/Campanhas";
+import Grupos from "./pages/admin/Grupos";
+import Leads from "./pages/admin/Leads";
+import RespostasAutomaticas from "./pages/admin/RespostasAutomaticas";
+import Aquecimento from "./pages/admin/Aquecimento";
 import Relatorios from "./pages/admin/Relatorios";
 import Configuracoes from "./pages/admin/Configuracoes";
 import Mensagens from "./pages/cliente/Mensagens";
@@ -43,6 +47,10 @@ const App = () => (
             <Route path="/admin/importar" element={<ProtectedRoute><ImportarContatos /></ProtectedRoute>} />
             <Route path="/admin/contatos" element={<ProtectedRoute><Contatos /></ProtectedRoute>} />
             <Route path="/admin/campanhas" element={<ProtectedRoute><Campanhas /></ProtectedRoute>} />
+            <Route path="/admin/grupos" element={<ProtectedRoute><Grupos /></ProtectedRoute>} />
+            <Route path="/admin/leads" element={<ProtectedRoute><Leads /></ProtectedRoute>} />
+            <Route path="/admin/respostas" element={<ProtectedRoute><RespostasAutomaticas /></ProtectedRoute>} />
+            <Route path="/admin/aquecimento" element={<ProtectedRoute><Aquecimento /></ProtectedRoute>} />
             <Route path="/admin/relatorios" element={<ProtectedRoute><Relatorios /></ProtectedRoute>} />
             <Route path="/admin/config" element={<ProtectedRoute><Configuracoes /></ProtectedRoute>} />
             <Route path="/admin/mensagens" element={<ProtectedRoute><Mensagens /></ProtectedRoute>} />
