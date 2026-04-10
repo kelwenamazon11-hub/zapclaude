@@ -16,24 +16,21 @@ export default function Login() {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    setTimeout(() => {
-      const success = login(email, senha);
-      if (success) {
-        const user = JSON.parse(localStorage.getItem("zapclaude_user") || "{}");
-        navigate(user.tipo === "admin" ? "/admin" : "/cliente");
-      } else {
-        toast({
-          title: "Erro ao entrar",
-          description: "E-mail ou senha incorretos.",
-          variant: "destructive",
-        });
-      }
-      setLoading(false);
-    }, 800);
+    const { error } = await login(email, senha);
+    if (error) {
+      toast({
+        title: "Erro ao entrar",
+        description: "E-mail ou senha incorretos.",
+        variant: "destructive",
+      });
+    } else {
+      navigate("/admin");
+    }
+    setLoading(false);
   };
 
   return (
@@ -44,7 +41,6 @@ export default function Login() {
         transition={{ duration: 0.5 }}
         className="w-full max-w-md"
       >
-        {/* Logo */}
         <div className="text-center mb-8">
           <motion.div
             initial={{ y: -20 }}
@@ -61,7 +57,6 @@ export default function Login() {
           </p>
         </div>
 
-        {/* Form */}
         <div className="glass-card p-8 glow-orange">
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
@@ -109,7 +104,6 @@ export default function Login() {
               )}
             </Button>
           </form>
-
         </div>
       </motion.div>
     </div>

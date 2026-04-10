@@ -14,8 +14,9 @@ import {
   ChevronRight,
   Send,
   Filter,
+  Smartphone,
 } from "lucide-react";
-import { useAuth, UserType } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface NavItem {
   icon: React.ElementType;
@@ -23,21 +24,17 @@ interface NavItem {
   path: string;
 }
 
-const adminItems: NavItem[] = [
+const navItems: NavItem[] = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/admin" },
-  { icon: Users, label: "Usuários", path: "/admin/usuarios" },
+  { icon: Smartphone, label: "Instâncias", path: "/admin/instancias" },
+  { icon: Send, label: "Disparos", path: "/admin/disparos" },
+  { icon: Users, label: "Contatos", path: "/admin/contatos" },
+  { icon: Upload, label: "Importar", path: "/admin/importar" },
   { icon: MessageSquare, label: "Campanhas", path: "/admin/campanhas" },
+  { icon: Filter, label: "Filtros", path: "/admin/filtros" },
+  { icon: MessageSquare, label: "Mensagens", path: "/admin/mensagens" },
   { icon: BarChart3, label: "Relatórios", path: "/admin/relatorios" },
   { icon: Settings, label: "Configurações", path: "/admin/config" },
-];
-
-const clienteItems: NavItem[] = [
-  { icon: LayoutDashboard, label: "Dashboard", path: "/cliente" },
-  { icon: Send, label: "Disparos", path: "/cliente/disparos" },
-  { icon: Users, label: "Contatos", path: "/cliente/contatos" },
-  { icon: Upload, label: "Importar", path: "/cliente/importar" },
-  { icon: Filter, label: "Filtros", path: "/cliente/filtros" },
-  { icon: MessageSquare, label: "Mensagens", path: "/cliente/mensagens" },
 ];
 
 export function Sidebar() {
@@ -45,15 +42,12 @@ export function Sidebar() {
   const { user, logout } = useAuth();
   const location = useLocation();
 
-  const items = user?.tipo === "admin" ? adminItems : clienteItems;
-
   return (
     <motion.aside
       animate={{ width: collapsed ? 72 : 260 }}
       transition={{ duration: 0.3 }}
       className="h-screen sticky top-0 flex flex-col border-r border-border bg-sidebar"
     >
-      {/* Logo */}
       <div className="flex items-center gap-3 px-4 h-16 border-b border-border">
         <div className="w-9 h-9 rounded-lg gradient-primary flex items-center justify-center flex-shrink-0">
           <Zap className="w-5 h-5 text-primary-foreground" />
@@ -69,15 +63,14 @@ export function Sidebar() {
         )}
       </div>
 
-      {/* Nav */}
       <nav className="flex-1 py-4 px-2 space-y-1 overflow-y-auto">
-        {items.map((item) => {
+        {navItems.map((item) => {
           const active = location.pathname === item.path;
           return (
             <Link
               key={item.path}
               to={item.path}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
                 active
                   ? "bg-primary/10 text-primary glow-orange"
                   : "text-muted-foreground hover:text-foreground hover:bg-secondary"
@@ -92,11 +85,10 @@ export function Sidebar() {
         })}
       </nav>
 
-      {/* Footer */}
       <div className="border-t border-border p-2 space-y-1">
-        {!collapsed && (
+        {!collapsed && user && (
           <div className="px-3 py-2 text-xs text-muted-foreground truncate">
-            {user?.nome}
+            {user.email}
           </div>
         )}
         <button
