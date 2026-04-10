@@ -15,6 +15,10 @@ import {
   Send,
   Filter,
   Smartphone,
+  Bot,
+  Users2,
+  Flame,
+  Target,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -31,8 +35,12 @@ const navItems: NavItem[] = [
   { icon: Users, label: "Contatos", path: "/admin/contatos" },
   { icon: Upload, label: "Importar", path: "/admin/importar" },
   { icon: MessageSquare, label: "Campanhas", path: "/admin/campanhas" },
+  { icon: Users2, label: "Grupos", path: "/admin/grupos" },
+  { icon: Target, label: "Leads", path: "/admin/leads" },
+  { icon: Bot, label: "Respostas Auto", path: "/admin/respostas" },
+  { icon: Flame, label: "Aquecimento", path: "/admin/aquecimento" },
   { icon: Filter, label: "Filtros", path: "/admin/filtros" },
-  { icon: MessageSquare, label: "Mensagens", path: "/admin/mensagens" },
+  { icon: MessageSquare, label: "Templates", path: "/admin/mensagens" },
   { icon: BarChart3, label: "Relatórios", path: "/admin/relatorios" },
   { icon: Settings, label: "Configurações", path: "/admin/config" },
 ];

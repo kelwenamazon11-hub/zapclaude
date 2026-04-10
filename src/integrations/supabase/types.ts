@@ -14,6 +14,56 @@ export type Database = {
   }
   public: {
     Tables: {
+      aquecimento: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          delay_max: number
+          delay_min: number
+          dia_atual: number
+          dias_total: number
+          id: string
+          instancia_id: string
+          mensagens_por_dia: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          delay_max?: number
+          delay_min?: number
+          dia_atual?: number
+          dias_total?: number
+          id?: string
+          instancia_id: string
+          mensagens_por_dia?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          delay_max?: number
+          delay_min?: number
+          dia_atual?: number
+          dias_total?: number
+          id?: string
+          instancia_id?: string
+          mensagens_por_dia?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aquecimento_instancia_id_fkey"
+            columns: ["instancia_id"]
+            isOneToOne: false
+            referencedRelation: "instancias"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       campanhas: {
         Row: {
           created_at: string
@@ -130,6 +180,50 @@ export type Database = {
         }
         Relationships: []
       }
+      grupos: {
+        Row: {
+          created_at: string
+          id: string
+          instancia_id: string | null
+          link: string | null
+          membros: number
+          nome: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          instancia_id?: string | null
+          link?: string | null
+          membros?: number
+          nome: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          instancia_id?: string | null
+          link?: string | null
+          membros?: number
+          nome?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grupos_instancia_id_fkey"
+            columns: ["instancia_id"]
+            isOneToOne: false
+            referencedRelation: "instancias"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       instancias: {
         Row: {
           created_at: string
@@ -158,6 +252,45 @@ export type Database = {
           numero?: string | null
           qr_code?: string | null
           status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      leads: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          nome: string | null
+          origem: string | null
+          pontuacao: number
+          status: string
+          telefone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          nome?: string | null
+          origem?: string | null
+          pontuacao?: number
+          status?: string
+          telefone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          nome?: string | null
+          origem?: string | null
+          pontuacao?: number
+          status?: string
+          telefone?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -204,6 +337,50 @@ export type Database = {
             columns: ["contato_id"]
             isOneToOne: false
             referencedRelation: "contatos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      respostas_automaticas: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          delay_segundos: number
+          id: string
+          instancia_id: string | null
+          palavra_chave: string
+          resposta: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          delay_segundos?: number
+          id?: string
+          instancia_id?: string | null
+          palavra_chave: string
+          resposta: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          delay_segundos?: number
+          id?: string
+          instancia_id?: string | null
+          palavra_chave?: string
+          resposta?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "respostas_automaticas_instancia_id_fkey"
+            columns: ["instancia_id"]
+            isOneToOne: false
+            referencedRelation: "instancias"
             referencedColumns: ["id"]
           },
         ]
