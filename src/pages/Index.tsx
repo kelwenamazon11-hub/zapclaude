@@ -3,16 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function Index() {
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isAuthenticated && user) {
-      navigate(user.tipo === "admin" ? "/admin" : "/cliente");
-    } else {
-      navigate("/login");
-    }
-  }, [isAuthenticated, user, navigate]);
+    if (loading) return;
+    navigate(isAuthenticated ? "/admin" : "/login");
+  }, [isAuthenticated, loading, navigate]);
 
   return null;
 }
