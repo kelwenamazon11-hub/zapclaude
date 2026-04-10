@@ -110,24 +110,6 @@ export default function Login() {
             </Button>
           </form>
 
-          {/* Demo credentials */}
-          <div className="mt-6 pt-5 border-t border-border">
-            <p className="text-xs text-muted-foreground text-center mb-3">Contas demo</p>
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                onClick={() => { setEmail("admin@zapclaude.com"); setSenha("admin123"); }}
-                className="text-xs py-2 px-3 rounded-lg bg-secondary text-muted-foreground hover:text-foreground hover:bg-secondary/80 transition-colors"
-              >
-                Admin
-              </button>
-              <button
-                onClick={() => { setEmail("cliente@zapclaude.com"); setSenha("cliente123"); }}
-                className="text-xs py-2 px-3 rounded-lg bg-secondary text-muted-foreground hover:text-foreground hover:bg-secondary/80 transition-colors"
-              >
-                Cliente
-              </button>
-            </div>
-          </div>
         </div>
       </motion.div>
     </div>
