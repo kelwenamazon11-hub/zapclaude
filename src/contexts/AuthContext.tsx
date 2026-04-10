@@ -1,52 +1,51 @@
-import { createContext, useContext, useState, ReactNode } from "react";
-
-export type UserType = "admin" | "cliente";
-
-interface User {
-  id: string;
-  nome: string;
-  email: string;
-  tipo: UserType;
-}
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { User, Session } from "@supabase/supabase-js";
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, senha: string) => boolean;
-  logout: () => void;
+  session: Session | null;
+  loading: boolean;
+  login: (email: string, senha: string) => Promise<{ error: string | null }>;
+  logout: () => Promise<void>;
   isAuthenticated: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-// Mock users for demo
-const MOCK_USERS: (User & { senha: string })[] = [
-  { id: "1", nome: "Felipe Henrique", email: "fhenrique87318130@gmail.com", tipo: "admin", senha: "fhenrique87318130@gmail.com" },
-];
-
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(() => {
-    const saved = localStorage.getItem("zapclaude_user");
-    return saved ? JSON.parse(saved) : null;
-  });
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const login = (email: string, senha: string): boolean => {
-    const found = MOCK_USERS.find((u) => u.email === email && u.senha === senha);
-    if (found) {
-      const { senha: _, ...userData } = found;
-      setUser(userData);
-      localStorage.setItem("zapclaude_user", JSON.stringify(userData));
-      return true;
-    }
-    return false;
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const login = async (email: string, senha: string) => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password: senha });
+    if (error) return { error: error.message };
+    return { error: null };
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("zapclaude_user");
+  const logout = async () => {
+    await supabase.auth.signOut();
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, session, loading, login, logout, isAuthenticated: !!session }}>
       {children}
     </AuthContext.Provider>
   );

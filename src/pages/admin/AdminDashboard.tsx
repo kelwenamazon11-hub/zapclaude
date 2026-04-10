@@ -1,97 +1,156 @@
 import { motion } from "framer-motion";
-import { Users, MessageSquare, Send, TrendingUp, Zap, AlertTriangle } from "lucide-react";
+import { Send, Users, MessageSquare, CheckCircle, Smartphone } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StatCard } from "@/components/ui/stat-card";
-
-const stats = [
-  { title: "Total de Usuários", value: "1.247", icon: Users, trend: { value: 12, positive: true }, subtitle: "Últimos 30 dias" },
-  { title: "Campanhas Ativas", value: "38", icon: MessageSquare, trend: { value: 8, positive: true } },
-  { title: "Mensagens Enviadas", value: "52.4K", icon: Send, trend: { value: 23, positive: true }, subtitle: "Esta semana" },
-  { title: "Taxa de Entrega", value: "96.8%", icon: TrendingUp, trend: { value: 2.1, positive: true } },
-];
-
-const recentActivity = [
-  { user: "Carlos Silva", action: "Criou campanha", detail: "Promoção Black Friday", time: "Há 5 min" },
-  { user: "Ana Oliveira", action: "Importou contatos", detail: "342 números", time: "Há 12 min" },
-  { user: "Pedro Santos", action: "Enviou disparo", detail: "1.200 mensagens", time: "Há 30 min" },
-  { user: "Maria Costa", action: "Filtrou lista", detail: "Removeu 89 inválidos", time: "Há 1h" },
-];
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 
 export default function AdminDashboard() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const { data: contatosCount = 0 } = useQuery({
+    queryKey: ["contatos-count"],
+    queryFn: async () => {
+      const { count } = await supabase.from("contatos").select("*", { count: "exact", head: true });
+      return count || 0;
+    },
+    enabled: !!user,
+  });
+
+  const { data: campanhas = [] } = useQuery({
+    queryKey: ["campanhas-recentes"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("campanhas")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(5);
+      return data || [];
+    },
+    enabled: !!user,
+  });
+
+  const { data: instancias = [] } = useQuery({
+    queryKey: ["instancias-count"],
+    queryFn: async () => {
+      const { data } = await supabase.from("instancias").select("*");
+      return data || [];
+    },
+    enabled: !!user,
+  });
+
+  const { data: mensagensCount = 0 } = useQuery({
+    queryKey: ["mensagens-count"],
+    queryFn: async () => {
+      const { count } = await supabase.from("mensagens_enviadas").select("*", { count: "exact", head: true });
+      return count || 0;
+    },
+    enabled: !!user,
+  });
+
+  const campanhasAtivas = campanhas.filter((c) => c.status === "enviando" || c.status === "agendada").length;
+  const instanciasConectadas = instancias.filter((i) => i.status === "conectado").length;
+
+  const stats = [
+    { title: "Mensagens Enviadas", value: mensagensCount.toLocaleString("pt-BR"), icon: Send },
+    { title: "Contatos", value: contatosCount.toLocaleString("pt-BR"), icon: Users },
+    { title: "Campanhas Ativas", value: campanhasAtivas, icon: MessageSquare },
+    { title: "Instâncias", value: `${instanciasConectadas}/${instancias.length}`, icon: Smartphone, subtitle: "Conectadas" },
+  ];
+
+  const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
+    enviando: { label: "Enviando", color: "text-primary", bg: "bg-primary/10" },
+    concluida: { label: "Concluída", color: "text-green-400", bg: "bg-green-500/10" },
+    agendada: { label: "Agendada", color: "text-blue-400", bg: "bg-blue-500/10" },
+    rascunho: { label: "Rascunho", color: "text-muted-foreground", bg: "bg-secondary" },
+    pausada: { label: "Pausada", color: "text-yellow-400", bg: "bg-yellow-500/10" },
+    cancelada: { label: "Cancelada", color: "text-red-400", bg: "bg-red-500/10" },
+  };
+
   return (
     <AppLayout>
       <div className="space-y-8">
-        {/* Header */}
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="text-3xl font-display font-bold text-foreground">
-            Painel <span className="text-primary glow-text">Administrativo</span>
-          </h1>
-          <p className="text-muted-foreground mt-1">Visão geral do sistema</p>
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+        >
+          <div>
+            <h1 className="text-3xl font-display font-bold text-foreground">
+              <span className="text-primary glow-text">Dashboard</span>
+            </h1>
+            <p className="text-muted-foreground mt-1">Visão geral do sistema</p>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => navigate("/admin/instancias")}
+              variant="outline"
+              className="border-border text-foreground hover:bg-secondary"
+            >
+              <Smartphone className="w-4 h-4 mr-2" /> Instâncias
+            </Button>
+            <Button
+              onClick={() => navigate("/admin/disparos")}
+              className="gradient-primary text-primary-foreground hover:opacity-90"
+            >
+              <Send className="w-4 h-4 mr-2" /> Novo Disparo
+            </Button>
+          </div>
         </motion.div>
 
-        {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {stats.map((stat, i) => (
             <StatCard key={stat.title} {...stat} index={i} />
           ))}
         </div>
 
-        {/* Activity + Alerts */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Recent Activity */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="lg:col-span-2 glass-card p-6"
-          >
-            <h2 className="font-display text-lg font-semibold text-foreground mb-4">
-              Atividade Recente
-            </h2>
-            <div className="space-y-4">
-              {recentActivity.map((item, i) => (
-                <div key={i} className="flex items-center gap-4 py-3 border-b border-border last:border-0">
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <Zap className="w-4 h-4 text-primary" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground">{item.user}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {item.action} · {item.detail}
-                    </p>
-                  </div>
-                  <span className="text-xs text-muted-foreground flex-shrink-0">{item.time}</span>
-                </div>
-              ))}
+        {/* Últimas Campanhas */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="glass-card p-6"
+        >
+          <h2 className="font-display text-lg font-semibold text-foreground mb-4">
+            Últimas Campanhas
+          </h2>
+          {campanhas.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <MessageSquare className="w-10 h-10 mx-auto mb-3 opacity-40" />
+              <p className="text-sm">Nenhuma campanha criada ainda</p>
+              <Button
+                onClick={() => navigate("/admin/disparos")}
+                variant="ghost"
+                className="mt-3 text-primary hover:text-primary hover:bg-primary/10"
+              >
+                Criar primeira campanha
+              </Button>
             </div>
-          </motion.div>
-
-          {/* Alerts */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="glass-card p-6"
-          >
-            <h2 className="font-display text-lg font-semibold text-foreground mb-4">Alertas</h2>
+          ) : (
             <div className="space-y-3">
-              <div className="flex items-start gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20">
-                <AlertTriangle className="w-4 h-4 text-primary mt-0.5" />
-                <div>
-                  <p className="text-sm font-medium text-foreground">Número aquecendo</p>
-                  <p className="text-xs text-muted-foreground">+55 11 9999-0001 em fase de aquecimento</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3 p-3 rounded-lg bg-green-500/5 border border-green-500/20">
-                <Zap className="w-4 h-4 text-green-400 mt-0.5" />
-                <div>
-                  <p className="text-sm font-medium text-foreground">Sistema estável</p>
-                  <p className="text-xs text-muted-foreground">Todas as filas processando normalmente</p>
-                </div>
-              </div>
+              {campanhas.map((camp) => {
+                const config = statusConfig[camp.status] || statusConfig.rascunho;
+                return (
+                  <div key={camp.id} className="flex items-center justify-between p-4 rounded-lg bg-secondary/50 border border-border hover:border-primary/20 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <h3 className="font-medium text-foreground">{camp.nome}</h3>
+                      <span className={`text-xs px-2 py-0.5 rounded-full ${config.bg} ${config.color}`}>
+                        {config.label}
+                      </span>
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      {camp.enviados}/{camp.total_contatos} enviados
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          </motion.div>
-        </div>
+          )}
+        </motion.div>
       </div>
     </AppLayout>
   );
